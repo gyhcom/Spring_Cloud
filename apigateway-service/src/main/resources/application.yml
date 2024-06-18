@@ -6,7 +6,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8791/eureka
+      defaultZone: http://localhost:8761/eureka/
 
 spring:
   application:
@@ -20,6 +20,10 @@ spring:
            preLogger: true
            postLogger: true
       routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/**
         - id: first-service
           uri: lb://MY-FIRST-SERVICE
           predicates:
