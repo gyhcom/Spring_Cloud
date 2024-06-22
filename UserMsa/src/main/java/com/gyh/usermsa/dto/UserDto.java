@@ -1,6 +1,8 @@
 package com.gyh.usermsa.dto;
 
+import com.gyh.usermsa.vo.ResponseOrder;
 import java.util.Date;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -12,4 +14,6 @@ public class UserDto {
     private Date createdAt;
 
     private String encryptedPwd;
+
+    private List<ResponseOrder> orders;
 }

@@ -1,19 +1,20 @@
 package com.gyh.usermsa.controller;
 
 import com.gyh.usermsa.dto.UserDto;
+import com.gyh.usermsa.jpa.UserEntity;
 import com.gyh.usermsa.service.UserService;
 import com.gyh.usermsa.vo.Greeting;
 import com.gyh.usermsa.vo.RequestUser;
 import com.gyh.usermsa.vo.ResponseUser;
-import com.netflix.discovery.converters.Auto;
+import java.util.ArrayList;
+import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/user-service")
 public class UserController {
+    private UserService userService;
+    private Greeting greeting;
+    private Environment env;
 
     public UserController(UserService userService, Greeting greeting, Environment env) {
         this.userService = userService;
@@ -38,9 +42,6 @@ public class UserController {
         this.env = env;
     }
 
-    private UserService userService;
-    private Greeting greeting;
-    private Environment env;
 
     @GetMapping("/heath_check")
     public String status() {
@@ -52,6 +53,32 @@ public class UserController {
     public String welcome(){
         return greeting.getMessage();
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<ResponseUser>> getUsers(){
+        Iterable<UserEntity> userList = userService.getUserByAll();
+        List<ResponseUser> result = new ArrayList<>();
+
+        //람다
+        userList.forEach(a ->{
+            result.add(new ModelMapper().map(a, ResponseUser.class));
+        });
+
+        //for문
+        for (UserEntity a : userList) {
+            System.out.println(a);
+            result.add(new ModelMapper().map(a, ResponseUser.class));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId){
+        UserDto userDto = userService.getUserByUserId(userId);
+        ResponseUser result = new ModelMapper().map(userDto, ResponseUser.class);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
     @PostMapping("/users")
     public ResponseEntity createUser(@RequestBody RequestUser user) {
         ModelMapper mapper = new ModelMapper();
