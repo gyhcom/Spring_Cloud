@@ -64,11 +64,11 @@ public class UserController {
             result.add(new ModelMapper().map(a, ResponseUser.class));
         });
 
-        //for문
+        /*for문
         for (UserEntity a : userList) {
             System.out.println(a);
             result.add(new ModelMapper().map(a, ResponseUser.class));
-        }
+        }*/
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
