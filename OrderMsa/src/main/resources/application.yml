@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: catalogs-service
+    name: orders-service
   datasource:
     url: jdbc:mariadb://localhost:2306/MSA
     username: msa
