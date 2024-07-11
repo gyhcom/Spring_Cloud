@@ -30,4 +30,24 @@ eureka:
     register-with-eureka: true
 
 greeting:
-  message: UserService---
+  message: UserService---.
+
+logging:
+  level:
+    com.gyh.usermsa.client: DEBUG
+  pattern:
+    correlation: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: B3
+      produce: B3
+#    zipkin:
+#      tracing:
+#        endpoint: http://localhost:9411/api/v2/spans
+    endpoints:
+      web:
+        exposure:
+          include: "*"

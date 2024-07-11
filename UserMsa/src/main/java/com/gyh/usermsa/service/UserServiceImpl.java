@@ -7,20 +7,37 @@ import com.gyh.usermsa.vo.ResponseOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     BCryptPasswordEncoder passwordEncoder;
 
+
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByEmail(s);
+
+        if (userEntity == null)
+            throw new UsernameNotFoundException(s);
+
+            return new User(userEntity.getEmail(), userEntity.getEncryptedPwd(),
+                true, true, true, true, new ArrayList<>());
+
     }
 
     @Override
@@ -44,10 +61,11 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UsernameNotFoundException("User not found");
         }
-            UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
 
-            List<ResponseOrder> orderList = new ArrayList<>();
-            userDto.setOrders(orderList);
+        log.info("Before call orders microservice");
+        List<ResponseOrder> orderList = new ArrayList<>();
+        userDto.setOrders(orderList);
 
         return userDto;
     }

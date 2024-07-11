@@ -6,11 +6,15 @@ import com.gyh.usermsa.service.UserService;
 import com.gyh.usermsa.vo.Greeting;
 import com.gyh.usermsa.vo.RequestUser;
 import com.gyh.usermsa.vo.ResponseUser;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,12 +49,22 @@ public class UserController {
 
     @GetMapping("/heath_check")
     public String status() {
-        return String.format("UserService Working on Port %s",
-            env.getProperty("local.server.port"));
+        return String.format("It's Working in User Service"
+            + ", port(local.server.port)=" + env.getProperty("local.server.port")
+            + ", port(server.port)=" + env.getProperty("server.port")
+            + ", gateway ip(env)=" + env.getProperty("gateway.ip")
+            + ", gateway ip(value)=" + greeting.getIp()
+            + ", message=" + env.getProperty("greeting.message")
+            + ", token secret=" + greeting.getSecret()
+            + ", token expiration time=" + env.getProperty("token.expiration_time"));
     }
 
     @GetMapping("/welcome")
-    public String welcome(){
+    public String welcome(HttpServletRequest request, HttpServletResponse response){
+        System.out.println("users.welcome ip:" + request.getRemoteAddr() +
+            "," + request.getRemoteHost() +
+            "," + request.getRequestURI() +
+            "," + request.getRequestURL());
         return greeting.getMessage();
     }
 
@@ -73,10 +87,20 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId){
+    public ResponseEntity getUser(@PathVariable("userId") String userId){
         UserDto userDto = userService.getUserByUserId(userId);
         ResponseUser result = new ModelMapper().map(userDto, ResponseUser.class);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        EntityModel entityModel = EntityModel.of(result);
+        WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(
+            WebMvcLinkBuilder.methodOn(this.getClass()).getUsers());
+        entityModel.add(linkTo.withRel("all-users"));
+
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(entityModel);
+        } catch (Exception exception) {
+            throw new RuntimeException();
+        }
     }
 
     @PostMapping("/users")
