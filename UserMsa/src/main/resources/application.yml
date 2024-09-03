@@ -51,3 +51,6 @@ management:
       web:
         exposure:
           include: "*"
+token:
+  expiration_time: 86400000
+  secret: hellohappilyeverafterhappilyeverafterhappilyeverafterhappilyeverafter

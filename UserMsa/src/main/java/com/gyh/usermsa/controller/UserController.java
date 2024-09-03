@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 */
 @RestController
 
-@RequestMapping("/user-service")
+@RequestMapping("/")
 public class UserController {
     private UserService userService;
     private Greeting greeting;
@@ -47,15 +47,15 @@ public class UserController {
     }
 
 
-    @GetMapping("/heath_check")
+    @GetMapping("/health-check")
     public String status() {
         return String.format("It's Working in User Service"
             + ", port(local.server.port)=" + env.getProperty("local.server.port")
             + ", port(server.port)=" + env.getProperty("server.port")
             + ", gateway ip(env)=" + env.getProperty("gateway.ip")
-            + ", gateway ip(value)=" + greeting.getIp()
+//            + ", gateway ip(value)=" + greeting.getIp()
             + ", message=" + env.getProperty("greeting.message")
-            + ", token secret=" + greeting.getSecret()
+//            + ", token secret=" + greeting.getSecret()
             + ", token expiration time=" + env.getProperty("token.expiration_time"));
     }
 

@@ -22,22 +22,8 @@ public class UserMsaApplication {
     }
 
     @Bean
-    public RestTemplate getRestTemplate() {
-        int TIMEOUT = 5000;
-        RestTemplate restTemplate = new RestTemplateBuilder()
-            .setConnectTimeout(Duration.ofMillis(TIMEOUT))
-            .setReadTimeout(Duration.ofMillis(TIMEOUT))
-            .build();
-
-        return restTemplate;
-    }
-
-    @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    public Logger.Level FeignLoggerLevel() {
-        return Level.FULL;
-    }
 }
