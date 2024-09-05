@@ -18,6 +18,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -27,12 +28,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private UserService userService;
     private Environment environment;
+    private final String secretKey;
+    private final long expirationTime;
+
 
     public AuthenticationFilter(AuthenticationManager authenticationManager,
         UserService userService, Environment environment) {
         super(authenticationManager);
         this.userService = userService;
         this.environment = environment;
+
+        this.secretKey = environment.getProperty("token.secret");
+        this.expirationTime = Long.parseLong(environment.getProperty("token.expiration_time"));
     }
 
     @Override
@@ -41,12 +48,18 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         try {
 
             RequestLogin creds = new ObjectMapper().readValue(req.getInputStream(), RequestLogin.class);
-
+            //DTO 검증
+            if (creds.getEmail() == null || creds.getPassword() == null) {
+                throw new AuthenticationServiceException("Email or Password is missing");
+            }
             return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>()));
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            //구체적인 예외처리와 로그 추가
+            logger.error("Error reading login request", e);
+            throw new AuthenticationServiceException("unable to authenticate user");
         }
     }
 
@@ -57,20 +70,23 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String userName = ((User) auth.getPrincipal()).getUsername();
         UserDto userDetails = userService.getUserDetailsByEmail(userName);
 
-        byte[] secretKeyBytes = Base64.getEncoder().encode(environment.getProperty("token.secret").getBytes());
+        String token = createToken(userDetails);
+        res.addHeader("token", token);
+        res.addHeader("userId", userDetails.getUserId());
+    }
 
+    private String createToken(UserDto userDetails) {
+
+        byte[] secretKeyBytes = Base64.getEncoder().encode(secretKey.getBytes());
         SecretKey secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
 
         Instant now = Instant.now();
 
-        String token = Jwts.builder()
+        return Jwts.builder()
             .subject(userDetails.getUserId())
-            .expiration(java.util.Date.from(now.plusMillis(Long.parseLong(environment.getProperty("token.expiration_time")))))
-            .issuedAt(java.util.Date.from(now))
+            .expiration(Date.from(now.plusMillis(expirationTime)))
+            .issuedAt(Date.from(now))
             .signWith(secretKey)
             .compact();
-
-        res.addHeader("token", token);
-        res.addHeader("userId", userDetails.getUserId());
     }
 }
