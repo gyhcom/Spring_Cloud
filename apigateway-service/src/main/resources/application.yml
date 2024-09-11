@@ -63,7 +63,7 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
-#            - AuthorizationHeaderFilter
+            - AuthorizationHeaderFilter
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
@@ -103,10 +103,12 @@ spring:
                 postLogger: true
 
 token:
-  secret: user_token
-
+  expiration_time: 86400000
+  secret: hellohappilyeverafterhappilyeverafterhappilyeverafterhappilyeverafter
 management:
   endpoints:
     web:
       exposure:
         include: refresh, health, beans, httpexchanges, busrefresh, info, metrics, prometheus
+
+

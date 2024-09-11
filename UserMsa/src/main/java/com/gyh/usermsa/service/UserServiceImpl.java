@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
 
         if (userEntity == null)
             throw new UsernameNotFoundException(s);
-            return new User(userEntity.getEmail(), userEntity.getEncryptedPwd(),
-                true, true, true, true, new ArrayList<>());
+        return new User(userEntity.getEmail(), userEntity.getEncryptedPwd(),
+            true, true, true, true, new ArrayList<>());
 
     }
 
