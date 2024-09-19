@@ -102,9 +102,9 @@ spring:
                 preLogger: true
                 postLogger: true
 
-token:
-  expiration_time: 86400000
-  secret: hellohappilyeverafterhappilyeverafterhappilyeverafterhappilyeverafter
+#token:
+#  expiration_time: 86400000
+#  secret: hellohappilyeverafterhappilyeverafterhappilyeverafterhappilyeverafter
 management:
   endpoints:
     web:

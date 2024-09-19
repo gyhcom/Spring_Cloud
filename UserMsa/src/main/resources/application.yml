@@ -38,19 +38,20 @@ logging:
   pattern:
     correlation: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
 management:
-  tracing:
-    sampling:
-      probability: 1.0
-    propagation:
-      consume: B3
-      produce: B3
+#  tracing:
+#    sampling:
+#      probability: 1.0
+#    propagation:
+#      consume: B3
+#      produce: B3
 #    zipkin:
 #      tracing:
 #        endpoint: http://localhost:9411/api/v2/spans
     endpoints:
       web:
         exposure:
-          include: "*"
-token:
-  expiration_time: 86400000
-  secret: hellohappilyeverafterhappilyeverafterhappilyeverafterhappilyeverafter
+          include: health, refresh, beans, httptrace
+
+#token:
+#  expiration_time: 86400000
+#  secret: hellohappilyeverafterhappilyeverafterhappilyeverafterhappilyeverafter

@@ -55,6 +55,7 @@ public class UserController {
             + ", gateway ip(env)=" + env.getProperty("gateway.ip")
 //            + ", gateway ip(value)=" + greeting.getIp()
             + ", message=" + env.getProperty("greeting.message")
+            + ", tokenSecret=" + env.getProperty("token.secret")
 //            + ", token secret=" + greeting.getSecret()
             + ", token expiration time=" + env.getProperty("token.expiration_time"));
     }

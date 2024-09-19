@@ -61,6 +61,7 @@ public class WebSecurity {
                     .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/swagger-resources/**")).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
 //                        .requestMatchers("/**").access(this::hasIpAddress)
                     .requestMatchers("/**").access(
                         new WebExpressionAuthorizationManager(
