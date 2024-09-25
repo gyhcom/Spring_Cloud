@@ -9,7 +9,9 @@ import com.gyh.usermsa.vo.ResponseUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.core.env.Environment;
@@ -66,7 +68,8 @@ public class UserController {
             "," + request.getRemoteHost() +
             "," + request.getRequestURI() +
             "," + request.getRequestURL());
-        return greeting.getMessage();
+
+    return greeting.getMessage();
     }
 
     @GetMapping("/users")
@@ -84,6 +87,7 @@ public class UserController {
             System.out.println(a);
             result.add(new ModelMapper().map(a, ResponseUser.class));
         }*/
+
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

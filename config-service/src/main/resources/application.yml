@@ -14,3 +14,16 @@ spring:
         #          username: <github-id>
         #          password: <gihub-accessToken>
         bootstrap: true
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        prefetch: 5
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -25,11 +26,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@RefreshScope
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private UserService userService;
-    private Environment environment;
-    private final String secretKey;
-    private final long expirationTime;
+    private final UserService userService;
+    private final Environment environment;
 
 
     public AuthenticationFilter(AuthenticationManager authenticationManager,
@@ -38,8 +38,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         this.userService = userService;
         this.environment = environment;
 
-        this.secretKey = environment.getProperty("token.secret");
-        this.expirationTime = Long.parseLong(environment.getProperty("token.expiration_time"));
     }
 
     @Override
@@ -77,14 +75,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private String createToken(UserDto userDetails) {
 
-        byte[] secretKeyBytes = Base64.getEncoder().encode(secretKey.getBytes());
+        byte[] secretKeyBytes = Base64.getEncoder().encode(environment.getProperty("token.secret").getBytes());
         SecretKey secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
 
         Instant now = Instant.now();
 
         return Jwts.builder()
             .subject(userDetails.getUserId())
-            .expiration(Date.from(now.plusMillis(expirationTime)))
+            .expiration(Date.from(now.plusMillis(Long.parseLong(environment.getProperty("token.expiration_time")))))
             .issuedAt(Date.from(now))
             .signWith(secretKey)
             .compact();

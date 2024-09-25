@@ -1,5 +1,5 @@
 token:
   expiration_time: 86400000
-  secret: my_token_defaultmy_token_defaultmy_token_defaultmy_token_defaultmy_token_default
+  secret: user_my_token_user_my_token_user_my_token_user_my_token_user_my_token_22
 gateway:
   ip: 192.168.0.1

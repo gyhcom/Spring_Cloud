@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
+@RefreshScope
+@ConfigurationProperties(prefix = "token")
 public class Greeting {
     @Value("${greeting.message}")
     private String message;
