@@ -12,10 +12,10 @@ spring:
     listener:
       simple:
         prefetch: 5
-  datasource:
-    url: jdbc:mariadb://localhost:2306/MSA
-    username: msa
-    password: msa
+#  datasource:
+#    url: jdbc:mariadb://localhost:2306/MSA
+#    username: msa
+#    password: msa
   jpa:
     hibernate:
       ddl-auto: update

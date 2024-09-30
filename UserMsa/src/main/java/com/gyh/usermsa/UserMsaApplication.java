@@ -26,4 +26,8 @@ public class UserMsaApplication {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
+    }
 }
